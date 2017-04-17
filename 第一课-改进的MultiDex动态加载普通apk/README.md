@@ -1,15 +1,15 @@
-#Android插件化（一）：使用改进的MultiDex动态加载assets中的apk#
+# Android插件化（一）：使用改进的MultiDex动态加载assets中的apk#
 
 <br>
-##Author：莫川
-##简介
+## Author：莫川
+## 简介
 为了解决65535方法数超标的问题，Google推荐使用MultiDex来加载classes2.dex,classes3.dex等等，其基本思想就是在运行时动态修改ClassLoader，以达到动态加载类的目的。为了更好的理解MultiDex的工作原理，可以先看一下ClassLoader的工作原理[1].然后参见PathClassLoader的源码，当然，它继承自BaseDexClassLoader，主要源码都在BaseDexClassLoader中。MultiDex加载离线apk的过程如下：
 ![multidex.png](multidex.png)
 
 我们可以在Application的onCreate方法或者Activity的attachBaseContext方法中开发加载。
-##动态加载assets中的apk
+## 动态加载assets中的apk
 根据MultiDex的源码，我们可以修改其install方法，然后从assets资源中解压出所需要加载的apk文件，然后调用installSecondaryDexes方法，将其加载到当前Application的ClassLoader当中，这样，在运行的时候，就可以通过当前的ClassLoader查找到离线apk中的类了。
-###[AssetsMultiDexLoader.class]
+### [AssetsMultiDexLoader.class]
 
 ```java
 package net.mobctrl.hostapk;
@@ -493,7 +493,7 @@ public class AssetsMultiDexLoader {
 
 ```
 
-###[AssetsManager.java]
+### [AssetsManager.java]
 
 ```java
 package net.mobctrl.hostapk;
@@ -575,7 +575,7 @@ public class AssetsManager {
 ```
 以上就是从assets中加载apk的核心代码。
 
-##DEMO运行
+## DEMO运行
 打开BundleApk项目，编译成apk。然后将BundleApk.apk文件拷贝到HostApk项目的assets目录，在HostApk的MainActivity方法的onCreate当中，调用AssetsMultiDexLoader.install(getApplicationContext());加载BundleApk.apk。然后我们就可以通过如下两种方式调用BundleApk中的类：
 
 - Class.forName<br>
@@ -634,11 +634,11 @@ private void loadClass(){
 ```
 
 
-##源码
+## 源码
 
 https://github.com/nuptboyzhb/AndroidPluginFramework
 
-#参考文章
+# 参考文章
 [1].[ClassLoader的工作原理](http://segmentfault.com/a/1190000004062880)<br>
 [2].[PathClassLoader源码](https://android.googlesource.com/platform/libcore-snapshot/+/ics-mr1/dalvik/src/main/java/dalvik/system)<br>
 [3].[MultiDex源码](https://android.googlesource.com/platform/frameworks/multidex/+/d79604bd38c101b54e41745f85ddc2e04d978af2/library/src/android/support/multidex)<br>
